@@ -1,0 +1,54 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@model int
+
+<div class="text-center">
+    <img src="/UI.jpg" style="cursor:pointer" height="300" width="300"/>
+</div>
+
+<div class="text-center">
+    <h1 class="display-4">Harjoitustehtävä!</h1>
+    <hr />
+    <ol>
+        <li>Tee Authentication -toiminnot projektiin</li>
+        <li>Aseta UserController roolin taakse</li>
+        <hr />
+        <li>Tee ylläoleva eeppinen UI -toimintakuntoiseksi niin, että käyttäjä voi rekisteröityä ja kirjautua sisään. Hyödynnä HomeControllerissa olevia tallennusfunktioita!</li>
+        <hr />
+        <li>Tarkista, että sovelluksesi on tietoturvallinen</li>
+    </ol>
+    <hr />
+    <input type="number" id="numero" value="10"/>
+    <button onclick="EkaPartial()">Eka sivu</button>
+    <button onclick="TokaPartial()">Toka sivu</button>
+</div>
+<div id="partial-container">
+    <partial name="_FirstPartial"/>
+</div>
+@section Scripts{
+    <script>
+        function EkaPartial(){
+            var val = $("#numero").val();
+            window.history.pushState('page2', 'Title', '/?type=1');
+            $.ajax({
+                type: "post",
+                url: "/Home/_FirstPartial",
+                data: "maara="+val,
+                success: function(data){
+                    $("#partial-container").html(data);
+                }
+            });
+        }
+        function TokaPartial(){
+            window.history.pushState('page2', 'Title', '/?type=2');
+            $.ajax({
+                type: "post",
+                url: "/Home/_SecondPartial",
+                success: function(data){
+                    $("#partial-container").html(data);
+                }
+            });
+        }
+    </script>
+}
