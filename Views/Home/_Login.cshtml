@@ -1,0 +1,17 @@
+﻿@model UserRegisterViewModel
+<div class="login-register">
+    <div class="tabs">
+        <div data-target="Login" class="active login-tab">Kirjaudu</div>
+        <div data-target="Register" class="inactive login-tab">Rekisteröidy</div>
+    </div>
+    <form asp-action="Login" asp-controller="Home" method="post">
+        <label asp-for="name" class="form-label"></label>
+        <input asp-for="name"/>
+        <span asp-validation-for="name" class="text-danger"></span>
+        <label asp-for="password" class="form-label"></label>
+        <input asp-for="password"/>
+        <span asp-validation-for="password" class="text-danger"></span>
+        <input type="submit" value="Kirjaudu"/>
+        <span>@ViewData["error"]</span>
+    </form>
+</div>

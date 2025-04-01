@@ -1,74 +1,95 @@
 using System.Diagnostics;
+using System.Reflection;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using SecondMVC.Models;
+using SecondMVC.Models.Services;
 
 namespace SecondMVC.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
 
-    public HomeController(ILogger<HomeController> logger)
-    {
-        _logger = logger;
-    }
-
-    public IActionResult Index()
+    public IActionResult Index() // K‰ytt‰j‰ tulee ensikerran sivulle
     {
         return View();
     }
-    [HttpPost]
-    public IActionResult _FirstPartial(int maara)
-    {
-        return PartialView(maara);
-    }
-    [HttpPost]
-    public IActionResult _SecondPartial()
-    {
-        return PartialView();
-    }
-    
     public IActionResult Privacy()
     {
         return View();
     }
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
+    [HttpPost]
+    public IActionResult _Register() // Ainoastaan ajax "Sivuvaihtoa varten"
     {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return PartialView();
+    }
+    [HttpPost, ValidateAntiForgeryToken]
+    public IActionResult Register(UserRegisterViewModel vm)
+    {
+        vm.Register = true;
+        if (ModelState.IsValid)
+        {
+            var uusiKayttaja = new User()
+            {
+                username = vm.name,
+                password = vm.password
+            };
+            uusiKayttaja.user_dogs = new List<Doggo>();
+            uusiKayttaja.user_dogs.Add(new Doggo()
+            {
+                name = "Ruska",
+                age = 11,
+                color = "Brown"
+            });
+            uusiKayttaja.user_dogs.Add(new Doggo()
+            {
+                name = "Tuska",
+                age = 112,
+                color = "Black"
+            });
+            MongoManipulator.SaveUser(uusiKayttaja);
+            return RedirectToAction("Index");
+        }
+        return View("Index", vm);
+    }
+
+    [HttpPost]
+    public IActionResult _Login()// Ainoastaan ajax "Sivuvaihtoa varten"
+    {
+        return PartialView();
+    }
+    [HttpPost, ValidateAntiForgeryToken]
+    public IActionResult Login(UserRegisterViewModel vm)
+    {
+        vm.Register = false;
+        if (ModelState.IsValid)
+        {
+            var vastaavuus = MongoManipulator.GetUserByUsername(vm.name);
+            if(vastaavuus != null)
+            {
+                if (vastaavuus.password == vm.password)
+                {
+                    bool login = true; // Kutsutaan authentication funktiota
+                    return RedirectToAction("Privacy");
+                }
+            }
+            ViewData["error"] = "K‰ytt‰j‰tunnus tai salasana v‰‰r‰";
+        }
+        return View("Index", vm);
     }
 
 
-    public string testi_tallennus() // Test!
+    public string test()
     {
-        var kayttis = new kayttaja()
+        var dogi = new Doggo()
         {
-            username = "Joni",
-            password = "secret_ebin"
+            name = "Ruska",
+            age = 11,
+            color = "Brown"
         };
-        TallennaKayttaja(kayttis);
-        return JsonSerializer.Serialize(kayttis);
-    }
-    public void TallennaKayttaja(kayttaja kayttaja)
-    {
-        try
-        {
-            var kaikkiKayttajat = LueKayttajat();
-            kaikkiKayttajat.Add(kayttaja);
-            System.IO.File.WriteAllText("kayttajat.json", JsonSerializer.Serialize(kaikkiKayttajat));
-        }
-        catch
-        {
-            System.IO.File.WriteAllText("kayttajat.json", JsonSerializer.Serialize(new List<kayttaja>()));
-        }
-    }
-    public List<kayttaja> LueKayttajat()
-    {
-        var kayttajaLista = System.IO.File.ReadAllText("kayttajat.json");
-        if (kayttajaLista == null) return new List<kayttaja>();
-        try{ return JsonSerializer.Deserialize<List<kayttaja>>(kayttajaLista); }
-        catch { return new List<kayttaja>(); }
+        dogi = MongoManipulator.SaveDoggo(dogi);
+        return JsonSerializer.Serialize(dogi);
     }
 }

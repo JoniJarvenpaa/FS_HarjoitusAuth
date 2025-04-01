@@ -8,17 +8,13 @@ namespace SecondMVC.Models
         [Required]
         [MinLength(3)]
         [MaxLength(40)]
-        [DisplayName("Nimi")]
+        [DisplayName("Käyttäjänimi")]
         public string name { get; set; }
 
         [Required]
-        [EmailAddress]
-        [DisplayName("Sähköpostiosoite")]
-        public string email { get; set; }
-
-        [Required]
-        [DisplayName("Salasali")]
+        [DisplayName("Salasana")]
         [DataType(DataType.Password)]
         public string password { get; set; }
+        public bool Register { get; set; }
     }
 }

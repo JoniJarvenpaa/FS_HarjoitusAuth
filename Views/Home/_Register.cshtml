@@ -1,0 +1,20 @@
+﻿@model UserRegisterViewModel
+@{
+    var modelTestforDebuggin = Model;
+}
+<div class="login-register">
+    <div class="tabs">
+        <div data-target="Login" class="inactive login-tab">Kirjaudu</div>
+        <div data-target="Register" class="active login-tab">Rekisteröidy</div>
+    </div>
+    <form asp-action="Register" asp-controller="Home" method="post">
+        <label asp-for="name" class="form-label"></label>
+        <input asp-for="name" />
+        <span asp-validation-for="name" class="text-danger"></span>
+        <label asp-for="password" class="form-label"></label>
+        <input asp-for="password" />
+        <span asp-validation-for="password" class="text-danger"></span>
+        <input type="submit" value="Rekisteröidy"/>
+        <span>Muista lukea <a href="#">käyttöehdot!</a></span>
+    </form>
+</div>
