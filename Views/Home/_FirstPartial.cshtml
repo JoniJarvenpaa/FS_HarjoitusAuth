@@ -1,9 +1,0 @@
-﻿@model int
-@{
-    int maara = Model <= 0 ? 10 : Model;
-}
-<h1>Tämä on partial sivu</h1>
-@for (int i = 0; i < maara; i++)
-{
-    <span>@i</span>
-}
